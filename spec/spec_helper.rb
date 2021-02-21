@@ -12,8 +12,22 @@ if defined?(JRUBY_VERSION)
     Rhino::Context.new
   end
 else
-  require 'v8'
+  require 'mini_racer'
+  module MiniRacer
+    class JSError < StandardError
+    end
+    class Context
+      def []=(key,value)
+        @globals ||= {}
+        @globals[key] = value
+      end
+      def [](key)
+        @globals ||= {}
+        @globals[key]
+      end
+    end
+  end
   def new_runtime
-    V8::Context.new
+    MiniRacer::Context.new
   end
 end
